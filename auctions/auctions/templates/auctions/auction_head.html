@@ -1,0 +1,65 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Live and Upcoming Auctions</h2>
+    {% if messages %}
+    {% for message in messages %}
+    <div class="message">{{ message }}</div>
+    {% endfor %}
+    {% endif %}
+    <div id="activelist">
+    {% for list in a2 %}
+    <div class = "jumbotron">
+        <!-- <a href="{% url 'auctionpage' list.id %}">Auction Items</a> -->
+        <p> <a href="{% url 'auctionpage' list.id %}"> {{ list.desc }}</a></p> 
+        <p class="start_date">Start Date:  {{ list.start_date}}</p>
+        <a><a class="end_date">End Date: </a> {{ list.end_date}} </a></a>
+        
+    </div>  
+    {% endfor %}
+    </div>
+
+<style>
+p{
+    padding: 1vw;
+}
+#activelist{
+    margin-top: 4vw;
+    grid-gap: 2vw;
+    display:grid;
+    width: 90%;
+    margin-left: 5%;
+    grid-template-rows: repeat(auto,1fr);
+    grid-template-columns: 1fr 1fr 1fr;
+    font-family: 'Nunito', sans-serif;
+    text-align: center;
+}
+.card{
+    display: grid;
+    grid-template-rows: repeat(auto,1fr);
+    grid-template-columns: 1fr;
+    width: 90%;
+    margin-left: 5%;
+}
+
+img{
+        width: 100%;
+    }
+
+.title{
+
+    font-size: 2vw;
+    font-weight: bold;
+}
+.c_price{
+    font-weight: bold;
+}
+
+
+</style>
+
+
+
+{% endblock %}
+
+

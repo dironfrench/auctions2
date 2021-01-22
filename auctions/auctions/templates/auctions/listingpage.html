@@ -1,0 +1,264 @@
+{% extends "auctions/layout.html" %}
+{% load l10n %}
+{% load imagefit %}
+
+<head>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+</head>
+
+
+{% block body %}
+    <a class="title">{{list.title}}</a><br>
+        <a class= "cat">{{list.category}}</a>
+        {% if messages %}
+        {% for message in messages %}
+            <div class="message">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+    <div id="activelist">
+        <div id = "productinfo">
+        {% if list.image1 %}
+            <a target="_blank" href="{{ list.image1.url }}">
+                <img src="{{ list.image1.url }}" alt=" " style="width:381px;height:363px;" >
+            </a>
+            <!-- <img src="{{ list.image1.url }}" class="list_img"> -->
+        {% else %}
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/No_image_3x4.svg/1024px-No_image_3x4.svg.png" alt="No image Provided" class="list_img">
+        {% endif %}
+
+        <p class="desc">{{ list.desc }}</p>
+        {% if list.image2 %}
+            <a target="_blank" href="{{ list.image2.url }}">
+                <img src="{{ list.image2.url }}" alt=" " >
+            </a>
+        {% endif %}
+
+        {% if list.image3 %}
+            <a target="_blank" href="{{ list.image3.url }}">
+                <img src="{{ list.image3.url }}" alt=" ">
+            </a>
+        {% endif %}
+
+        {% if list.image4 %}
+            <a target="_blank" href="{{ list.image4.url }}">
+                <img src="{{ list.image4.url }}" alt=" ">
+            </a>
+        {% endif %}
+
+        {% if list.image5 %}
+            <a target="_blank" href="{{ list.image5.url }}">
+                <img src="{{ list.image5.url }}" alt=" ">
+            </a>
+        {% endif %}
+
+        <div class = "start_bid"><a><a class="c_price">Current Bid: </a> ${{ present_bid|localize}} </div>
+        <div class = "start_bid"><a><a class="c_price">Listed By: </a> {{ list.user }}</div>
+        
+
+        <form method="get" action = "{% url 'bid' %}">
+        <input name= "bid_amnt" placeholder = "Bid Amount" type = "number" >
+        <button class="btn btn-outline-primary" type = "submit" name = "list_d" value = {{ list.id }}>Bid Item</button>
+        </form>
+        <div class="bid_amnt">
+        <form method= "get" action = "{% url 'addwatchlist' %}">
+        <button class="btn btn-outline-primary" type = "submit" value = {{ list.id }} name = "listid" >Add to Watchlist</button>
+        </form>
+        </div>
+        </div>
+
+
+        <div id="commentsection">
+        <h3>Comments</h3>
+        <div id="commentbox">
+            <ul>
+            {% for comment in comments %}
+            <li><a class="comment"><a>{{ comment.user }} : {{comment.comment}}</a></li>
+            {% endfor %}
+            </ul>
+        </div>
+
+        <form method = "get" action ="{% url 'allcomments' %}">
+        <input required type = "text" placeholder = "Add Comment" name = "comment">
+        <button class="btn btn-outline-primary" type = "submit" value = {{ list.id }} name = "listid"> Comment </button>
+        </form>
+        <div class= "closebid">
+        {% if list.user == user.username %}
+        <form method= "get" action = "{% url 'win_ner' %}">
+        <button class="btn btn-outline-primary" type = "submit" value = {{ list.id }} name = "listid" >Close Bid</button>
+        </form>
+        {% endif %}
+        </div>
+        </div>
+
+
+    </div>
+
+<style>
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        font-family: Arial;
+    }
+
+    /* The grid: Four equal columns that floats next to each other */
+    .column {
+        float: left;
+        width: 20%;
+        padding: 10px;
+    }
+
+    /* Style the images inside the grid */
+    .column img {
+        opacity: 0.8;
+        cursor: pointer;
+    }
+
+    .column img:hover {
+        opacity: 1;
+    }
+
+    /* Clear floats after the columns */
+    .row:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+    /* The expanding image container */
+    .container {
+        position: relative;
+        display: none;
+    }
+
+    /* Expanding image text */
+    #imgtext {
+        position: absolute;
+        bottom: 15px;
+        left: 15px;
+        color: white;
+        font-size: 20px;
+    }
+
+    /* Closable button inside the expanded image */
+    .closebtn {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        color: white;
+        font-size: 35px;
+        cursor: pointer;
+    }
+
+.closebid{
+    padding: 1vw;
+}
+
+#activelist{
+    margin-top: 2vw;
+    grid-gap: 2vw;
+    display:grid;
+    width: 80%;
+    margin-left: 10%;
+    grid-template-rows: repeat(auto,1fr);
+    grid-template-columns: 1fr 0.5fr;
+    font-family: 'Nunito', sans-serif;
+}
+/* p{
+    margin-top: 1vw;
+} */
+#commentsection{
+    
+    background-color: #F5F5F5;
+
+}
+
+.bid_amnt{
+    padding: 1vw;
+}
+
+/* h3{
+    padding-top: 2vw;
+} */
+
+#commentbox{
+text-align: left;
+padding-top: 1vw;
+background-color: white;
+min-height: 300px;
+margin: 1vw;
+
+}
+
+/* img{
+        width: 50%;
+      
+    }
+
+.title{
+
+    font-size: 2vw;
+    font-weight: bold;
+
+} */
+.c_price{
+    
+    font-weight: bold;
+
+}
+
+.comment{
+   align-items : left;
+}
+
+.start_bid{
+
+    padding-bottom: 1vw;
+
+}
+
+img {
+  border: 1px solid #ddd; /* Gray border */
+  border-radius: 4px;  /* Rounded border */
+  padding: 5px; /* Some padding */
+  width: 150px;  /* Set a small width */
+}
+
+/* Add a hover effect (blue shadow) */
+img:hover {
+  box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5);
+}
+
+.wpp-list{
+overflow: auto;
+display: inline-block;
+float: none;
+clear: both;
+width: 150px;
+}
+
+</style>
+
+<!--  -->
+<!-- New Java script -->
+<!--  -->
+
+<!-- <script>
+    function myFunction(imgs) {
+        var expandImg = document.getElementById("expandedImg");
+        var imgText = document.getElementById("imgtext");
+        expandImg.src = imgs.src;
+        imgText.innerHTML = imgs.alt;
+        expandImg.parentElement.style.display = "block";
+    }
+</script> -->
+
+{% endblock %}
+
+
