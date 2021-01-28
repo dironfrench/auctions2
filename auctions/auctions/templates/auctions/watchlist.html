@@ -1,26 +1,36 @@
 {% extends "auctions/layout.html" %}
+{% load humanize %}
 
 {% block body %}
     <h2>Watch List</h2>
-    <div id="activelist">
+    <div id="activelist" class="Jumbotron">   
     {% for list in user_watchlist %}
-    {% if list.watch_list.active_bool == True %}
-    <div class = "card">
-        <a class="title">{{list.watch_list.title}}</a>
-        <a class= "cat">{{list.watch_list.category}}</a>
-        {% if list.watch_list.image1 %}
-            <img src="{{ list.watch_list.image1.url }}" class="list_img">
-        {% else %}
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/No_image_3x4.svg/1024px-No_image_3x4.svg.png" alt="No image Provided" class="list_img">
+        {% if list.watch_list.active_bool == True %}
+            <div class="card">
+                <a class="title">{{list.watch_list.title}}</a>
+                <a class="cat">{{list.watch_list.category}}</a>
+                {% if list.watch_list.image1 %}
+                <!-- <img src="{{ list3.image1.url }}" class="list_img"> -->
+                <a href="{% url 'listingpage' list.id %}">
+                    <img src="{{ list.watch_list.image1.url }}" class="list_img">
+                </a>
+                {% else %}
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/No_image_3x4.svg/1024px-No_image_3x4.svg.png"
+                    alt="No image Provided" class="list_img">
+                {% endif %}
+            
+                <p class="desc">{{ list.watch_list.desc }}</p>
+                <a class="c_price">Current Bid: ${{ list.watch_list.current_bid|intcomma }} </a>
+                <div class="start_bid"><a><a class="c_price">Item End Date: </a> {{ list.watch_list.end_date|date:"F jS, Y" }}</div>
+                <div class="start_bid"><a><a class="c_price">Time Remaining: </a> {{ list.watch_list.end_date|timeuntil }}</div>
+
+                <a href="{% url 'listingpage' list.watch_list.id %}">View / Bid</a>
+            
+                <form action = "{% url 'deletewatchlist' %}">
+                <button type = "submit" value = {{ list.id }} name = "listid" >Delete</button>
+                </form>
+        </div>
         {% endif %}
-        <a class="c_price">Current Bid:  ${{ list.watch_list.current_bid }}  </a>
-        <a href="{% url 'listingpage' list.watch_list.id %}">View/Bid</a>
-        
-        <form action = "{% url 'deletewatchlist' %}">
-        <button type = "submit" value = {{ list.id }} name = "listid" >Delete</button>
-        </form>
-    {% endif %}
-    </div>  
     {% endfor %}
     </div>
       

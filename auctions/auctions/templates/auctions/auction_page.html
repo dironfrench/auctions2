@@ -1,4 +1,5 @@
 {% extends "auctions/layout.html" %}
+{% load humanize %}
 
 {% block body %}
     <h2>Auction Details</h2>
@@ -7,30 +8,33 @@
     <div class="message">{{ message }}</div>
     {% endfor %}
     {% endif %}
-    <div id="activelist">
+
+    <div class="topcard">
     {% for list in a2 %}
-    <div class = "card">
-        <a class="name">{{list.name}}</a>
+        <!-- <a class="name">{{list.name}}</a> -->
          <p class="desc">{{ list.desc }}</p>
-        <a><a class="start_date">Start Date: </a> {{ list.start_date}} </a>
-    </div>  
+        <a><a class="start_date">Start Date: </a> {{ list.start_date}} </a> <br>
+        <a><a class="end_date">End Date: </a> {{ list.end_date}} </a>
     {% endfor %}
     </div>
 
-    <div id="activelist">
+    <div id="activelist" class="Jumbotron">
         {% for list3 in a3 %}
         <div class="card">
             <a class="title">{{list3.title}}</a>
             <a class="cat">{{list3.category}}</a>
             {% if list3.image1 %}
-            <img src="{{ list3.image1.url }}" class="list_img">
-            {% else %}
+            <!-- <img src="{{ list3.image1.url }}" class="list_img"> -->
+            <a  href="{% url 'listingpage' list3.id %}">
+                <img src="{{ list3.image1.url }}" class="list_img">
+            </a>
+           {% else %}
             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/No_image_3x4.svg/1024px-No_image_3x4.svg.png"
                 alt="No image Provided" class="list_img">
             {% endif %}
     
             <p class="desc">{{ list3.desc }}</p>
-            <a class="c_price">Current Bid:  ${{ list3.current_bid }}  </a>
+            <a class="c_price">Current Bid:  ${{ list3.current_bid|intcomma }}  </a>
             <a href="{% url 'listingpage' list3.id %}">View / Bid</a>
         </div>
         {% endfor %}
@@ -58,7 +62,12 @@ p{
     width: 90%;
     margin-left: 5%;
 }
-
+.topcard{
+  margin: auto;
+  width: 60%;
+  border: 3px solid #73AD21;
+  padding: 10px;
+}
 img{
         width: 100%;
     }

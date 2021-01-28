@@ -94,11 +94,13 @@ def listingpage(request, bidid):
     # biddesc = auctionlist.objects.get(pk = bidid, active_bool = True)
     biddesc = auctionitem.objects.get(pk = bidid, active_bool = True)
     bids_present = bids.objects.filter(listingid = bidid)
+    high_bid_info = minbid(biddesc.starting_bid, bids_present)
 
     return render(request, "auctions/listingpage.html",{
         "list": biddesc,
         "comments" : comments.objects.filter(listingid = bidid),
-        "present_bid": minbid(biddesc.starting_bid, bids_present),
+        "present_bid": high_bid_info[0],
+        "high_bidder_current" : high_bid_info[1],
     })
 
 
@@ -161,21 +163,26 @@ def minbid(min_bid, present_bid):
     for bids_list in present_bid:
         if min_bid < int(bids_list.bid):
             min_bid = int(bids_list.bid)
-    return min_bid
+            max_bidder = bids_list.user
+    return min_bid, max_bidder
 
 
 @login_required(login_url='login')
 def bid(request):
+
     bid_amnt = request.GET["bid_amnt"]
+    if bid_amnt == '':
+        bid_amnt = 0
+
     list_id = request.GET["list_d"]
     bids_present = bids.objects.filter(listingid = list_id)
     # bids_present = bids.objects.filter(listingid='999').aggregate(Max('bid'))    # new max bid query
     startingbid = auctionitem.objects.get(pk=list_id)
     min_req_bid = startingbid.starting_bid
-    min_req_bid = minbid(min_req_bid, bids_present)
+    min_req_bid = minbid(min_req_bid, bids_present)[0]
 
     if float(bid_amnt) > float(min_req_bid):
-        mybid = bids(user = request.user.username, listingid = list_id , bid = int(float(bid_amnt)))
+        mybid = bids(user = request.user.id, listingid = list_id , bid = int(float(bid_amnt)))
         mybid.save()
         startingbid.current_bid = int(float(bid_amnt))
         startingbid.save()  
@@ -203,7 +210,7 @@ def win_ner(request):
     bid_id = request.GET["listid"]
     bids_present = bids.objects.filter(listingid = bid_id)
     biddesc = auctionlist.objects.get(pk = bid_id, active_bool = True)
-    max_bid = minbid(biddesc.starting_bid, bids_present)
+    max_bid = minbid(biddesc.starting_bid, bids_present)[0]
     try:
         # checks if anyone other than list_owner win the bid
         winner_object = bids.objects.get(bid = max_bid, listingid = bid_id)

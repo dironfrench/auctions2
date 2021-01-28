@@ -8,57 +8,63 @@
     {% endfor %}
     {% endif %}
     <div id="activelist">
-    {% for list in a2 %}
-    <div class = "jumbotron">
-        <!-- <a href="{% url 'auctionpage' list.id %}">Auction Items</a> -->
-        <p> <a href="{% url 'auctionpage' list.id %}"> {{ list.desc }}</a></p> 
-        <p class="start_date">Start Date:  {{ list.start_date}}</p>
-        <a><a class="end_date">End Date: </a> {{ list.end_date}} </a></a>
-        
-    </div>  
-    {% endfor %}
+        {% for list in a2 %}
+        <div class="card">
+            <!-- <a href="{% url 'auctionpage' list.id %}">Auction Items</a> -->
+            <p> <a href="{% url 'auctionpage' list.id %}"> {{ list.desc }}</a></p> 
+            <p class="start_date">Start Date:  {{ list.start_date}}</p>
+            <p><a class="end_date">End Date: </a> {{ list.end_date}} </p>
+            <a> Time Remaining: {{ list.end_date|timeuntil}}   </a>
+        </div>
+        {% endfor %}
     </div>
 
-<style>
-p{
-    padding: 1vw;
-}
-#activelist{
-    margin-top: 4vw;
-    grid-gap: 2vw;
-    display:grid;
-    width: 90%;
-    margin-left: 5%;
-    grid-template-rows: repeat(auto,1fr);
-    grid-template-columns: 1fr 1fr 1fr;
-    font-family: 'Nunito', sans-serif;
-    text-align: center;
-}
-.card{
-    display: grid;
-    grid-template-rows: repeat(auto,1fr);
-    grid-template-columns: 1fr;
-    width: 90%;
-    margin-left: 5%;
-}
+</script>
 
-img{
+<style>
+    p {
+        padding: 1vw;
+    }
+
+    #activelist {
+        margin-top: 4vw;
+        grid-gap: 2vw;
+        display: grid;
+        width: 90%;
+        margin-left: 5%;
+        grid-template-rows: repeat(auto, 1fr);
+        grid-template-columns: 1fr 1fr 1fr;
+        font-family: 'Nunito', sans-serif;
+        text-align: center;
+    }
+
+    .card {
+        display: grid;
+        grid-template-rows: repeat(auto, 1fr);
+        grid-template-columns: 1fr;
+        /* width: 90%; */
+        margin-left: 5%;
+        justify-content: center;
+        /* margin: auto; */
+        width: 90%;
+        border: 3px solid #73AD21;
+        padding: 10px;
+    }
+
+    img {
         width: 100%;
     }
 
-.title{
+    .title {
 
-    font-size: 2vw;
-    font-weight: bold;
-}
-.c_price{
-    font-weight: bold;
-}
+        font-size: 2vw;
+        font-weight: bold;
+    }
 
-
+    .c_price {
+        font-weight: bold;
+    }
 </style>
-
-
 
 {% endblock %}
 
