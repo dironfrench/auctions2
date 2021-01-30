@@ -13,7 +13,7 @@ class auctionhead(models.Model):
     desc = models.TextField()
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
-    auction_head_image = models.ImageField(upload_to='uploads/')
+    auction_head_image = models.ImageField(upload_to='uploads/',null=True)
     active_bool = models.BooleanField(default=True)
     location = models.TextField(null = True)
     highlights = models.TextField(null=True)

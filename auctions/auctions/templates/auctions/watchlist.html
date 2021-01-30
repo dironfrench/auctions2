@@ -11,7 +11,7 @@
                 <a class="cat">{{list.watch_list.category}}</a>
                 {% if list.watch_list.image1 %}
                 <!-- <img src="{{ list3.image1.url }}" class="list_img"> -->
-                <a href="{% url 'listingpage' list.id %}">
+                <a href="{% url 'listingpage' list.watch_list.id %}">
                     <img src="{{ list.watch_list.image1.url }}" class="list_img">
                 </a>
                 {% else %}

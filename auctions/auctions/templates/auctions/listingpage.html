@@ -21,7 +21,7 @@
     <div id="activelist">
         <div id = "productinfo">
         {% if list.image1 %}
-            <a target="_blank" href="{{ list.image1.url }}">
+            <a target="_parent" href="{{ list.image1.url }}">
                 <img src="{{ list.image1.url }}" alt=" " style="width:381px;height:363px;" >
             </a>
             <!-- <img src="{{ list.image1.url }}" class="list_img"> -->
@@ -31,33 +31,33 @@
 
         <p class="desc">{{ list.desc }}</p>
         {% if list.image2 %}
-            <a target="_blank" href="{{ list.image2.url }}">
+            <a target="_parent" href="{{ list.image2.url }}">
                 <img src="{{ list.image2.url }}" alt=" " >
             </a>
         {% endif %}
 
         {% if list.image3 %}
-            <a target="_blank" href="{{ list.image3.url }}">
+            <a target="_parent" href="{{ list.image3.url }}">
                 <img src="{{ list.image3.url }}" alt=" ">
             </a>
         {% endif %}
 
         {% if list.image4 %}
-            <a target="_blank" href="{{ list.image4.url }}">
+            <a target="_parent" href="{{ list.image4.url }}">
                 <img src="{{ list.image4.url }}" alt=" ">
             </a>
         {% endif %}
 
         {% if list.image5 %}
-            <a target="_blank" href="{{ list.image5.url }}">
+            <a target="_parent" href="{{ list.image5.url }}">
                 <img src="{{ list.image5.url }}" alt=" ">
             </a>
         {% endif %}
         
-        
         <div class="start_bid"><a class="c_price">Current Bid: </a> ${{ present_bid|intcomma }} </div>
         <div class="start_bid"><a class="c_price">Current High Bidder: </a> {{ high_bidder_current }}</div>
-        <div class="start_bid"><a><a class="c_price">Item End Date: </a> {{ list.end_date|date:"F jS, Y" }}</div>
+        <!-- <div class="start_bid"><a><a class="c_price">Item End Date: </a> {{ list.end_date|date:"F jS, Y" }}</div> -->
+        <div class="start_bid"><a><a class="c_price">Minimum Bid: </a> ${{ next_bid_amount|intcomma }}</div>
         
         <!-- Display the countdown timer in an element -->
         <form action="" method="post">
@@ -77,31 +77,29 @@
         </div>
         </div>
 
+        <!-- <div id="commentsection">
+            <h3>Comments</h3>
+            <div id="commentbox">
+                <ul>
+                {% for comment in comments %}
+                <li><a class="comment"><a>{{ comment.user }} : {{comment.comment}}</a></li>
+                {% endfor %}
+                </ul>
+            </div>
 
-        <div id="commentsection">
-        <h3>Comments</h3>
-        <div id="commentbox">
-            <ul>
-            {% for comment in comments %}
-            <li><a class="comment"><a>{{ comment.user }} : {{comment.comment}}</a></li>
-            {% endfor %}
-            </ul>
-        </div>
+            <form method = "get" action ="{% url 'allcomments' %}">
+            <input required type = "text" placeholder = "Add Comment" name = "comment">
+            <button class="btn btn-outline-primary" type = "submit" value = {{ list.id }} name = "listid"> Comment </button>
+            </form>
 
-        <form method = "get" action ="{% url 'allcomments' %}">
-        <input required type = "text" placeholder = "Add Comment" name = "comment">
-        <button class="btn btn-outline-primary" type = "submit" value = {{ list.id }} name = "listid"> Comment </button>
-        </form>
-        <div class= "closebid">
-        {% if list.user == user.username %}
-        <form method= "get" action = "{% url 'win_ner' %}">
-        <button class="btn btn-outline-primary" type = "submit" value = {{ list.id }} name = "listid" >Close Bid</button>
-        </form>
-        {% endif %}
-        </div>
-        </div>
-
-
+            <div class= "closebid">
+                {% if list.user == user.username %}
+                <form method= "get" action = "{% url 'win_ner' %}">
+                <button class="btn btn-outline-primary" type = "submit" value = {{ list.id }} name = "listid" >Close Bid</button>
+                </form>
+                {% endif %}
+            </div>
+        </div> -->
     </div>
 
 <style>
@@ -236,6 +234,14 @@ img {
   border-radius: 4px;  /* Rounded border */
   padding: 5px; /* Some padding */
   width: 150px;  /* Set a small width */
+}
+
+.img_contain {
+  border: 1px solid #ddd; /* Gray border */
+  border-radius: 4px;  /* Rounded border */
+  padding: 5px; /* Some padding */
+  object-fit: scale-down;
+  width: 200px;
 }
 
 /* Add a hover effect (blue shadow) */

@@ -1,4 +1,5 @@
 {% extends "auctions/layout.html" %}
+{% load humanize %}
 
 {% block body %}
     <h2>Active Listings</h2>
@@ -10,17 +11,23 @@
     <div id="activelist">
     {% for list in a1 %}
     <div class = "jumbotron">
-        <a class="title">{{list.title}}</a>
-        <a class= "cat">{{list.category}}</a>
+        <a class="title">{{list.title}}</a> <br>
+        <a class="cat">{{list.category}}</a>
         {% if list.image1 %}
+        <!-- <img src="{{ list3.image1.url }}" class="list_img"> -->
+        <a href="{% url 'listingpage' list.id %}">
             <img src="{{ list.image1.url }}" class="list_img">
+        </a>
         {% else %}
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/No_image_3x4.svg/1024px-No_image_3x4.svg.png" alt="No image Provided" class="list_img">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/No_image_3x4.svg/1024px-No_image_3x4.svg.png"
+            alt="No image Provided" class="list_img">
         {% endif %}
-
+        
         <p class="desc">{{ list.desc }}</p>
-        <a><a class="c_price">Starting Bid: </a> ${{ list.starting_bid }} </a>
-        <p><a href="{% url 'listingpage' list.id %}">View / Bid</a></p>
+        <a class="c_price">Current Bid: </a> ${{ list.current_bid|intcomma }} <br>
+        <a class="c_price">Item End Date: </a> {{ list.end_date|date:"F jS, Y" }}
+        <div class="start_bid"><a><a class="c_price">Time Remaining: </a> {{ list.end_date|timeuntil }}</div>
+        <a href="{% url 'listingpage' list.id %}">View / Bid</a>
     </div>  
     {% endfor %}
     </div>

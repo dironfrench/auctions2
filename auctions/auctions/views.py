@@ -7,6 +7,7 @@ from .models import *
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 import datetime
+from django.db.models import Count
 
 
 def index(request):    
@@ -94,13 +95,24 @@ def listingpage(request, bidid):
     # biddesc = auctionlist.objects.get(pk = bidid, active_bool = True)
     biddesc = auctionitem.objects.get(pk = bidid, active_bool = True)
     bids_present = bids.objects.filter(listingid = bidid)
-    high_bid_info = minbid(biddesc.starting_bid, bids_present)
+    if bids_present:
+        high_bid_info = minbid(biddesc.starting_bid, bids_present)
+        loc_bid_increments = bidincrements.objects.filter(
+            active_bool=True, auctionhead=biddesc.auctionhead).order_by('up_to_amount')
+        if loc_bid_increments:
+            next_bid_amt = nextbidamt(high_bid_info[0], loc_bid_increments)    # call function to determine next bid amount
+        else:
+            next_bid_amt = high_bid_info[0] + 1
+    else:
+        high_bid_info = ("0","")
+        next_bid_amt = high_bid_info[0]                # 0 element = bid amount returned from minbid function
 
     return render(request, "auctions/listingpage.html",{
         "list": biddesc,
         "comments" : comments.objects.filter(listingid = bidid),
         "present_bid": high_bid_info[0],
         "high_bidder_current" : high_bid_info[1],
+        "next_bid_amount": next_bid_amt,
     })
 
 
@@ -166,6 +178,14 @@ def minbid(min_bid, present_bid):
             max_bidder = bids_list.user
     return min_bid, max_bidder
 
+# this function returns minimum required next bid based on price of item and bid increment table
+def nextbidamt(min_bid, bid_increment):
+    for bidsincr in bid_increment:
+        if min_bid < int(bidsincr.up_to_amount):
+            next_bid = int(bidsincr.bid_increment) + min_bid
+            break
+    return next_bid
+
 
 @login_required(login_url='login')
 def bid(request):
@@ -179,9 +199,19 @@ def bid(request):
     # bids_present = bids.objects.filter(listingid='999').aggregate(Max('bid'))    # new max bid query
     startingbid = auctionitem.objects.get(pk=list_id)
     min_req_bid = startingbid.starting_bid
-    min_req_bid = minbid(min_req_bid, bids_present)[0]
+    if bids_present:
+        min_req_bid = minbid(min_req_bid, bids_present)[0]   # This variable technically contains the current bid
 
-    if float(bid_amnt) > float(min_req_bid):
+    loc_bid_increments = bidincrements.objects.filter(
+        active_bool=True, auctionhead=startingbid.auctionhead).order_by('up_to_amount')
+
+    if loc_bid_increments:
+        next_bid_amt = nextbidamt(min_req_bid, loc_bid_increments)
+    else:
+        next_bid_amt = min_req_bid + 1
+
+
+    if float(bid_amnt) >= float(next_bid_amt):
         mybid = bids(user = request.user.id, listingid = list_id , bid = int(float(bid_amnt)))
         mybid.save()
         startingbid.current_bid = int(float(bid_amnt))
@@ -190,7 +220,7 @@ def bid(request):
         return listingpage(request, list_id)
 
     messages.warning(
-        request, f"Sorry, ${bid_amnt} is less than the minimum allowed bid. Bid amount must be greater than ${min_req_bid}.")
+        request, f"Sorry, ${bid_amnt} is less than the minimum allowed bid. Bid amount must be at least ${next_bid_amt}.")
     return listingpage(request, list_id)
 
    
@@ -246,10 +276,13 @@ def winnings(request):
 
 #shows lists that are present in a specific category
 def cat(request, category_name):
-    # category = auctionlist.objects.filter(category = category_name)
-    category = auctionitem.objects.filter(category=category_name)
+
+    # Category names are coming in as names and need to find primary key to query auctionitem table
+    categoryname = category.objects.get(category=category_name)
+    # Query auctionitem table with category primary key
+    category2 = auctionitem.objects.filter(category=categoryname.id)
     return render(request, "auctions/index.html", {
-        "a1" : category,
+        "a1" : category2,
     })
 
 #shows all categories in which object is listed
@@ -260,8 +293,34 @@ def cat_list(request):
     # and when you add distinct() along with it
     # it shows only unique names, omits duplicates
 
-    category_present = auctionitem.objects.values('category').distinct()
+    category_all = auctionitem.objects.filter(active_bool=True)
+    category_present = category_all
+
+    cat_nm_dist = ""
+    category_names_distinct = []
+
+    # Test count query
+    # duplicate_names = auctionitem.objects.values('category').annotate(
+    #     category_count=Count('category')).filter(category_count__gt=1)
+    # print(duplicate_names)
+ 
+    # New Join query.  Have to use[n] to get to each attribute
+    # a1 = auctionitem.objects.select_related('category')
+    # print(a1[0].category_id)
+
+
+    for each in category_present:
+        cat_name = each.category
+        category_names = category.objects.filter(
+            category=each.category).order_by('category')
+
+        for cat_names in category_names:
+            if cat_names.category != cat_nm_dist:
+                category_names_distinct.append(cat_names)
+                cat_nm_dist = cat_names.category
+
     return render(request, "auctions/category.html",{
-        "cat_list" : category_present,
+        "cat_list" : category_names_distinct
+        # "cat_list": (category_present, category_names)
     })
     
